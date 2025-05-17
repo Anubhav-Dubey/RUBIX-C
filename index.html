@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Rubik's Cube Timer</title>
+  
+  <!-- PWA Meta -->
+  <meta name="theme-color" content="#333">
+  <meta name="description" content="Professional Rubik's Cube Timer">
+  
+  <!-- iOS Meta -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CubeTimer">
+  <link rel="apple-touch-icon" href="icon-180.png">
+  <link rel="apple-touch-startup-image" href="splash-2048x2732.png" media="(device-width: 1024px) and (device-height: 1366px)">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  
+  <!-- Manifest -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon-192.png">
+</head>
+<body>
+  <div class="container">
+    <h1 class="title">Rubik's Cube Timer</h1>
+    
+    <div class="timer-container">
+      <p id="timeDisplay" class="time-display">00:00.00</p>
+    </div>
+    
+    <div class="btn-container">
+      <button id="btnStartStop" class="btn">Start</button>
+    </div>
+    
+    <div class="message-container">
+      <div id="messageDisplay" class="message"></div>
+    </div>
+    
+    <div class="stats">
+      <p id="lastTime">Last: --</p>
+      <p id="bestTime">Best: --</p>
+    </div>
+    
+    <div id="installPrompt" class="install-prompt hidden">
+      <button id="installBtn" class="install-btn">Install App</button>
+    </div>
+    
+    <div id="iosInstall" class="ios-install hidden">
+      <p>Tap <img src="icon-512.png" width="20"> then "Add to Home Screen"</p>
+    </div>
+  </div>
+
+  <!-- Service Worker -->
+  <script>
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(reg => console.log('SW registered'))
+          .catch(err => console.error('SW registration failed:', err));
+      });
+    }
+    
+    // Install Prompt
+    let deferredPrompt;
+    const installPrompt = document.getElementById('installPrompt');
+    const installBtn = document.getElementById('installBtn');
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installPrompt.classList.remove('hidden');
+    });
+    
+    installBtn.addEventListener('click', () => {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(() => {
+        installPrompt.classList.add('hidden');
+        deferredPrompt = null;
+      });
+    });
+    
+    // iOS Detection
+    if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+      if (!window.navigator.standalone) {
+        document.getElementById('iosInstall').classList.remove('hidden');
+      }
+    }
+    
+    // Timer Logic
+    const btnStartStop = document.getElementById('btnStartStop');
+    const timeDisplay = document.getElementById('timeDisplay');
+    const lastTimeDisplay = document.getElementById('lastTime');
+    const bestTimeDisplay = document.getElementById('bestTime');
+    const messageDisplay = document.getElementById('messageDisplay');
+
+    let timer = null;
+    let startTime = 0;
+    let elapsedTime = 0;
+    let isRunning = false;
+    let lastTime = null;
+    let bestTime = null;
+
+    btnStartStop.addEventListener('click', toggleTimer);
+    document.addEventListener('keydown', handleKeyPress);
+
+    function toggleTimer() {
+      if (!isRunning) startTimer();
+      else stopTimer();
+    }
+
+    function startTimer() {
+      if (isRunning) return;
+      elapsedTime = 0;
+      timeDisplay.textContent = "00:00.00";
+      messageDisplay.textContent = "";
+      messageDisplay.className = "message";
+      
+      startTime = Date.now();
+      timer = setInterval(updateTime, 10);
+      isRunning = true;
+      btnStartStop.textContent = 'Stop';
+      timeDisplay.style.color = 'var(--orange)';
+      timeDisplay.parentElement.style.boxShadow = '0 0 30px rgba(255, 87, 34, 0.6)';
+    }
+
+    function stopTimer() {
+      clearInterval(timer);
+      elapsedTime = Date.now() - startTime;
+      isRunning = false;
+      btnStartStop.textContent = 'Start';
+      timeDisplay.style.color = 'var(--green)';
+      timeDisplay.parentElement.style.boxShadow = '0 0 30px rgba(76, 175, 80, 0.6)';
+      
+      updateStats();
+      showMessage(elapsedTime);
+    }
+
+    function updateTime() {
+      elapsedTime = Date.now() - startTime;
+      timeDisplay.textContent = formatTime(elapsedTime);
+    }
+
+    function formatTime(ms) {
+      const date = new Date(ms);
+      return [
+        date.getUTCMinutes().toString().padStart(2, '0'),
+        date.getUTCSeconds().toString().padStart(2, '0'),
+        Math.floor(date.getUTCMilliseconds() / 10).toString().padStart(2, '0')
+      ].join(':');
+    }
+
+    function updateStats() {
+      lastTime = elapsedTime;
+      lastTimeDisplay.textContent = `Last: ${formatTime(lastTime)}`;
+      
+      if (!bestTime || elapsedTime < bestTime) {
+        bestTime = elapsedTime;
+        bestTimeDisplay.textContent = `Best: ${formatTime(bestTime)}`;
+      }
+    }
+
+    function showMessage(ms) {
+      const sec = ms / 1000;
+      let msg = "", cls = "";
+      
+      if (sec > 60) { msg = "Keep practicing! 🧐"; cls = "practice"; }
+      else if (sec > 30) { msg = "Good! 👍"; cls = "good"; }
+      else if (sec > 20) { msg = "Fantastic!! ✨"; cls = "fantastic"; }
+      else if (sec > 15) { msg = "Crazy fast!!! 🤯"; cls = "crazy"; }
+      else { msg = "GODLY SPEED!!! �"; cls = "godly"; }
+      
+      messageDisplay.textContent = msg;
+      messageDisplay.className = `message ${cls}`;
+    }
+
+    function handleKeyPress(e) {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        toggleTimer();
+      }
+    }
+  </script>
+</body>
+</html>
