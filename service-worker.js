@@ -1,18 +1,22 @@
-const CACHE_NAME = 'cube-timer-v4';
+const CACHE_NAME = 'rubix-c-v4';
 const ASSETS = [
   '/',
   '/index.html',
   '/style.css',
+  '/timer.js',
   '/manifest.json',
   '/icon-192.png',
   '/icon-512.png',
-  'https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap'
+  '/icon-180.png'
 ];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(ASSETS))
+      .then(cache => {
+        console.log('Caching assets');
+        return cache.addAll(ASSETS);
+      })
       .then(() => self.skipWaiting())
   );
 });
@@ -20,7 +24,17 @@ self.addEventListener('install', (e) => {
 self.addEventListener('fetch', (e) => {
   e.respondWith(
     caches.match(e.request)
-      .then(cached => cached || fetch(e.request))
+      .then(cached => {
+        if (cached) return cached;
+        return fetch(e.request)
+          .then(response => {
+            // Cache new requests
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
+            return response;
+          })
+          .catch(() => caches.match('/index.html')); // Fallback
+      })
   );
 });
 
