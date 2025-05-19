@@ -12,30 +12,21 @@ let elapsedTime = 0;
 let isRunning = false;
 let lastTime = null;
 let bestTime = null;
-let resetTimeout = null;
 
 // Event Listeners
 btnStartStop.addEventListener('click', toggleTimer);
 document.addEventListener('keydown', handleKeyPress);
 
+// Main Functions
 function toggleTimer() {
-  if (!isRunning) {
-    startTimer();
-  } else {
-    stopTimer();
-  }
+  if (!isRunning) startTimer();
+  else stopTimer();
 }
 
 function startTimer() {
   if (isRunning) return;
   
-  // Clear any pending reset
-  if (resetTimeout) {
-    clearTimeout(resetTimeout);
-    resetTimeout = null;
-  }
-  
-  // ALWAYS reset to 0 when starting fresh
+  // Reset for new attempt
   elapsedTime = 0;
   timeDisplay.textContent = "00:00.00";
   messageDisplay.textContent = "";
@@ -59,22 +50,22 @@ function stopTimer() {
   
   updateStats();
   showMessage(elapsedTime);
-  
-  // No automatic reset anymore - will reset on next start
+  generateScramble(); // New feature
 }
 
 function updateTime() {
-  const currentTime = Date.now();
-  elapsedTime = currentTime - startTime;
+  elapsedTime = Date.now() - startTime;
   timeDisplay.textContent = formatTime(elapsedTime);
 }
 
-function formatTime(milliseconds) {
-  const date = new Date(milliseconds);
-  const minutes = date.getUTCMinutes().toString().padStart(2, '0');
-  const seconds = date.getUTCSeconds().toString().padStart(2, '0');
-  const centiseconds = Math.floor(date.getUTCMilliseconds() / 10).toString().padStart(2, '0');
-  return `${minutes}:${seconds}.${centiseconds}`;
+// Helper Functions
+function formatTime(ms) {
+  const date = new Date(ms);
+  return [
+    date.getUTCMinutes().toString().padStart(2, '0'),
+    date.getUTCSeconds().toString().padStart(2, '0'),
+    Math.floor(date.getUTCMilliseconds() / 10).toString().padStart(2, '0')
+  ].join(':');
 }
 
 function updateStats() {
@@ -87,30 +78,35 @@ function updateStats() {
   }
 }
 
-function showMessage(timeInMs) {
-  const seconds = timeInMs / 1000;
-  let message = "";
-  let messageClass = "";
+function showMessage(ms) {
+  const sec = ms / 1000;
+  let msg = "", cls = "";
   
-  if (seconds > 60) {
-    message = "Keep practicing! 🧐";
-    messageClass = "message-practice";
-  } else if (seconds > 30) {
-    message = "Good! 👍";
-    messageClass = "message-good";
-  } else if (seconds > 20) {
-    message = "Fantastic!! ✨";
-    messageClass = "message-fantastic";
-  } else if (seconds > 15) {
-    message = "Crazy fast!!! 🤯";
-    messageClass = "message-crazy";
-  } else {
-    message = "GODLY SPEED!!! 🏆🤴";
-    messageClass = "message-godly";
+  if (sec > 60) { msg = "Keep practicing! 🧐"; cls = "practice"; }
+  else if (sec > 30) { msg = "Good! 👍"; cls = "good"; }
+  else if (sec > 20) { msg = "Fantastic!! ✨"; cls = "fantastic"; }
+  else if (sec > 15) { msg = "Crazy fast!!! 🤯"; cls = "crazy"; }
+  else { msg = "GODLY SPEED!!! 🏆"; cls = "godly"; }
+  
+  messageDisplay.textContent = msg;
+  messageDisplay.className = `message ${cls}`;
+}
+
+// New Feature: Scramble Generator
+function generateScramble() {
+  const moves = ["U", "D", "L", "R", "F", "B"];
+  const modifiers = ["", "'", "2"];
+  let scramble = [];
+  
+  for (let i = 0; i < 20; i++) {
+    scramble.push(
+      moves[Math.floor(Math.random() * moves.length)] + 
+      modifiers[Math.floor(Math.random() * modifiers.length)]
+    );
   }
   
-  messageDisplay.textContent = message;
-  messageDisplay.className = `message ${messageClass}`;
+  console.log("New scramble:", scramble.join(" "));
+  // You can display this in UI later
 }
 
 function handleKeyPress(e) {
