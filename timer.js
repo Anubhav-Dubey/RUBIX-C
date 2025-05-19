@@ -17,7 +17,6 @@ let bestTime = null;
 btnStartStop.addEventListener('click', toggleTimer);
 document.addEventListener('keydown', handleKeyPress);
 
-// Main Functions
 function toggleTimer() {
   if (!isRunning) startTimer();
   else stopTimer();
@@ -26,7 +25,6 @@ function toggleTimer() {
 function startTimer() {
   if (isRunning) return;
   
-  // Reset for new attempt
   elapsedTime = 0;
   timeDisplay.textContent = "00:00.00";
   messageDisplay.textContent = "";
@@ -36,8 +34,7 @@ function startTimer() {
   timer = setInterval(updateTime, 10);
   isRunning = true;
   btnStartStop.textContent = 'Stop';
-  timeDisplay.style.color = 'var(--orange)';
-  timeDisplay.parentElement.style.boxShadow = '0 0 30px rgba(255, 87, 34, 0.6)';
+  timeDisplay.style.color = '#FF5722';
 }
 
 function stopTimer() {
@@ -45,12 +42,10 @@ function stopTimer() {
   elapsedTime = Date.now() - startTime;
   isRunning = false;
   btnStartStop.textContent = 'Start';
-  timeDisplay.style.color = 'var(--green)';
-  timeDisplay.parentElement.style.boxShadow = '0 0 30px rgba(76, 175, 80, 0.6)';
+  timeDisplay.style.color = '#4CAF50';
   
   updateStats();
   showMessage(elapsedTime);
-  generateScramble(); // New feature
 }
 
 function updateTime() {
@@ -58,7 +53,6 @@ function updateTime() {
   timeDisplay.textContent = formatTime(elapsedTime);
 }
 
-// Helper Functions
 function formatTime(ms) {
   const date = new Date(ms);
   return [
@@ -92,23 +86,6 @@ function showMessage(ms) {
   messageDisplay.className = `message ${cls}`;
 }
 
-// New Feature: Scramble Generator
-function generateScramble() {
-  const moves = ["U", "D", "L", "R", "F", "B"];
-  const modifiers = ["", "'", "2"];
-  let scramble = [];
-  
-  for (let i = 0; i < 20; i++) {
-    scramble.push(
-      moves[Math.floor(Math.random() * moves.length)] + 
-      modifiers[Math.floor(Math.random() * modifiers.length)]
-    );
-  }
-  
-  console.log("New scramble:", scramble.join(" "));
-  // You can display this in UI later
-}
-
 function handleKeyPress(e) {
   if (e.code === 'Space') {
     e.preventDefault();
@@ -117,4 +94,4 @@ function handleKeyPress(e) {
 }
 
 // Initialize
-timeDisplay.style.color = 'var(--white)';
+timeDisplay.style.color = '#ffffff';
