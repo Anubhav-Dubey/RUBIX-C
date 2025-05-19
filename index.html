@@ -4,19 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Rubik's Cube Timer</title>
-  <meta name="theme-color" content="#333333">
-  <meta name="description" content="Professional Rubik's Cube Timer with PWA support">
+  <meta name="theme-color" content="#333">
+  <meta name="description" content="Professional Rubik's Cube Timer PWA">
   
-  <!-- iOS PWA Config -->
+  <!-- iOS Meta -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="CubeTimer">
-  <link rel="apple-touch-icon" href="icon-180.png">
   
   <!-- CSS -->
   <link rel="stylesheet" href="style.css">
   
-  <!-- PWA Manifest -->
+  <!-- Manifest -->
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icon-192.png">
 </head>
@@ -24,81 +22,45 @@
   <div class="container">
     <h1 class="title">Rubik's Cube Timer</h1>
     
-    <!-- Timer Display -->
     <div class="timer-container">
       <p id="timeDisplay" class="time-display">00:00.00</p>
     </div>
     
-    <!-- Control Button -->
     <div class="btn-container">
       <button id="btnStartStop" class="btn">Start</button>
     </div>
     
-    <!-- Performance Message -->
+    <!-- New 3D Cube Container -->
+    <div id="cube-container"></div>
+    
     <div class="message-container">
       <div id="messageDisplay" class="message"></div>
     </div>
     
-    <!-- Statistics -->
     <div class="stats">
       <p id="lastTime">Last: --</p>
       <p id="bestTime">Best: --</p>
     </div>
-    
-    <!-- Install Prompt (Hidden by Default) -->
-    <div id="installPrompt" class="install-prompt hidden">
-      <button id="installBtn" class="install-btn">Install App</button>
-    </div>
   </div>
 
-  <!-- Service Worker Registration -->
+  <!-- Three.js Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  
+  <!-- Service Worker -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('service-worker.js')
-          .then(reg => {
-            console.log('Service Worker registered');
-            
-            // Auto-update when new SW is available
-            reg.addEventListener('updatefound', () => {
-              window.location.reload();
-            });
-          })
-          .catch(err => console.error('SW registration failed:', err));
+          .then(reg => console.log('SW registered'))
+          .catch(err => console.error('SW failed:', err));
       });
-    }
-    
-    // Install Prompt Handling
-    let deferredPrompt;
-    const installBtn = document.getElementById('installBtn');
-    
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      document.getElementById('installPrompt').classList.remove('hidden');
-    });
-    
-    installBtn.addEventListener('click', () => {
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then(() => {
-        document.getElementById('installPrompt').classList.add('hidden');
-      });
-    });
-    
-    // iOS Detection
-    if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-      if (!window.navigator.standalone) {
-        const iosPrompt = document.createElement('div');
-        iosPrompt.className = 'ios-install';
-        iosPrompt.innerHTML = `
-          <p>Tap <img src="icon-512.png" width="20"> then "Add to Home Screen"</p>
-        `;
-        document.body.appendChild(iosPrompt);
-      }
     }
   </script>
   
-  <!-- Timer Logic (External File) -->
+  <!-- Timer Logic -->
   <script src="timer.js"></script>
+  
+  <!-- Cube Visualizer -->
+  <script src="cube.js"></script>
 </body>
 </html>
