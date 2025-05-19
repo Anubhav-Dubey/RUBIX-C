@@ -4,19 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Rubik's Cube Timer</title>
-  <meta name="theme-color" content="#333">
-  <meta name="description" content="Professional Rubik's Cube Timer PWA">
+  <meta name="theme-color" content="#333333">
+  <meta name="description" content="Professional Rubik's Cube Timer with 3D Visualization">
   
-  <!-- iOS Meta -->
+  <!-- Critical PWA Meta Tags -->
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  
-  <!-- CSS -->
-  <link rel="stylesheet" href="style.css">
+  <meta name="apple-mobile-web-app-title" content="CubeTimer">
   
   <!-- Manifest -->
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-180.png">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
@@ -30,7 +33,7 @@
       <button id="btnStartStop" class="btn">Start</button>
     </div>
     
-    <!-- New 3D Cube Container -->
+    <!-- 3D Cube Container -->
     <div id="cube-container"></div>
     
     <div class="message-container">
@@ -41,26 +44,46 @@
       <p id="lastTime">Last: --</p>
       <p id="bestTime">Best: --</p>
     </div>
+    
+    <!-- Install Prompt (Hidden by Default) -->
+    <div id="installPrompt" class="install-prompt hidden">
+      <p>Install for fullscreen experience?</p>
+      <button id="installBtn" class="install-btn">Install App</button>
+    </div>
   </div>
 
   <!-- Three.js Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   
-  <!-- Service Worker -->
+  <!-- PWA Installation Logic -->
   <script>
+    // Service Worker Registration
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('service-worker.js')
-          .then(reg => console.log('SW registered'))
+          .then(reg => console.log('SW registered (Android ready)'))
           .catch(err => console.error('SW failed:', err));
       });
     }
+    
+    // Android Install Prompt
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById('installPrompt').classList.remove('hidden');
+    });
+    
+    document.getElementById('installBtn').addEventListener('click', () => {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(() => {
+        document.getElementById('installPrompt').classList.add('hidden');
+      });
+    });
   </script>
   
-  <!-- Timer Logic -->
+  <!-- App Logic -->
   <script src="timer.js"></script>
-  
-  <!-- Cube Visualizer -->
   <script src="cube.js"></script>
 </body>
 </html>
