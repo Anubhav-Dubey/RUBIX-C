@@ -8,24 +8,16 @@
   --black: #333;
 }
 
-@viewport {
-  width: device-width;
-  zoom: 1.0;
-}
-
 body {
   font-family: 'Roboto', sans-serif;
   background-color: var(--black);
   color: var(--white);
   margin: 0;
-  padding: 0;
-  min-height: 100vh;
+  padding: 20px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-  overscroll-behavior: contain;
+  min-height: 100vh;
   background-image: 
     linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)),
     url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect x="0" y="0" width="33" height="33" fill="%23FF5722"/><rect x="33" y="0" width="34" height="33" fill="%23FFFFFF"/><rect x="67" y="0" width="33" height="33" fill="%234CAF50"/><rect x="0" y="33" width="33" height="34" fill="%23FFFFFF"/><rect x="33" y="33" width="34" height="34" fill="%232196F3"/><rect x="67" y="33" width="33" height="34" fill="%23FFFFFF"/><rect x="0" y="67" width="33" height="33" fill="%23FFEB3B"/><rect x="33" y="67" width="34" height="33" fill="%23FFFFFF"/><rect x="67" y="67" width="33" height="33" fill="%23F44336"/></svg>');
@@ -34,11 +26,54 @@ body {
 
 .container {
   text-align: center;
-  padding: 20px;
   width: 100%;
   max-width: 500px;
 }
 
+/* New Cube Container Styles */
+#cube-container {
+  width: 300px;
+  height: 350px;
+  margin: 20px auto;
+  position: relative;
+  background: #222;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+#move-history {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 5px;
+}
+
+#move-history div {
+  padding: 2px 8px;
+  background: #333;
+  color: white;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+#move-history div:hover {
+  background: #444;
+}
+
+#speedSelect {
+  margin-left: 5px;
+  padding: 3px;
+  border-radius: 3px;
+  border: none;
+}
+
+/* Rest of your existing styles... */
 .timer-container {
   margin: 30px 0;
   padding: 30px;
@@ -55,10 +90,6 @@ body {
   letter-spacing: 3px;
 }
 
-.btn-container {
-  margin: 20px 0;
-}
-
 .btn {
   background: linear-gradient(135deg, var(--orange), var(--red));
   color: white;
@@ -69,17 +100,6 @@ body {
   cursor: pointer;
   transition: all 0.3s;
   box-shadow: 0 5px 20px rgba(244,67,54,0.4);
-  text-transform: uppercase;
-  font-weight: bold;
-}
-
-.btn:active {
-  transform: scale(0.98);
-}
-
-.message-container {
-  min-height: 80px;
-  margin: 20px 0;
 }
 
 .message {
@@ -87,69 +107,9 @@ body {
   padding: 10px 20px;
   border-radius: 50px;
   display: inline-block;
-  opacity: 0;
-  transform: scale(0.9);
-  transition: all 0.3s;
 }
 
-.message.practice { opacity: 1; transform: scale(1); background: rgba(255,255,255,0.1); }
-.message.good { opacity: 1; transform: scale(1); color: var(--green); text-shadow: 0 0 10px rgba(76,175,80,0.5); }
-.message.fantastic { opacity: 1; transform: scale(1); color: var(--blue); animation: pulse 0.5s infinite alternate; }
-.message.crazy { opacity: 1; transform: scale(1); color: var(--yellow); animation: pulse 0.4s infinite alternate; }
-.message.godly { 
-  opacity: 1; 
-  transform: scale(1); 
-  animation: 
-    pulse 0.3s infinite alternate,
-    rainbow 2s infinite;
-  font-weight: bold;
-}
-
-.stats {
-  display: flex;
-  justify-content: space-around;
-  width: 100%;
-  margin-top: 20px;
-  font-size: 1.2rem;
-}
-
-.install-prompt, .ios-install {
-  margin-top: 30px;
-}
-
-.install-btn {
-  background: var(--green);
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.ios-install img {
-  vertical-align: middle;
-}
-
-.hidden {
-  display: none;
-}
-
-@keyframes pulse {
-  0% { transform: scale(1); }
-  100% { transform: scale(1.05); }
-}
-
-@keyframes rainbow {
-  0% { color: #f44336; }
-  14% { color: #FF5722; }
-  28% { color: #FFEB3B; }
-  42% { color: #4CAF50; }
-  57% { color: #2196F3; }
-  71% { color: #673AB7; }
-  85% { color: #9C27B0; }
-  100% { color: #f44336; }
-}
-
+/* Your existing media queries... */
 @media (max-width: 600px) {
   .timer-container {
     padding: 20px;
