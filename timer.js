@@ -34,7 +34,12 @@ function generateScramble(length=20) {
   
   const scrambleStr = scramble.join(' ');
   document.getElementById("scramble").textContent = scrambleStr;
-  
+   // ===== ADD THIS LINE =====
+  if (window.cubeAPI) window.cubeAPI.visualizeScramble(scrambleStr);
+  // ========================
+
+  return scrambleStr;
+}
   // Trigger 3D visualization
   if (window.cubeAPI) {
     window.cubeAPI.visualizeScramble(scrambleStr);
