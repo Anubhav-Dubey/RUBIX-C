@@ -136,8 +136,15 @@ timeDisplay.style.color = 'var(--white)';
 generateScramble(); // Initial scramble
 
 // Initialize cube when page loads
+// ===== ADD THIS INIT CODE =====
+// Initialize cube when page loads
 window.addEventListener('load', () => {
   if (window.cubeAPI) {
     window.cubeAPI.initCube();
+    
+    // Optional: First scramble visualization
+    const initialScramble = generateScramble();
+    window.cubeAPI.visualizeScramble(initialScramble);
   }
 });
+// =============================
