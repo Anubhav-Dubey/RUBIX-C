@@ -128,3 +128,46 @@ body {
     font-size: 1.4rem;
   }
 }
+/* ===== 3D CUBE VISUALIZER STYLES ===== */
+/* Add these after all other styles */
+.speed-control {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: white;
+  z-index: 10;
+}
+
+.speed-control select {
+  margin-left: 5px;
+  padding: 3px;
+  background: #333;
+  color: white;
+  border: 1px solid #555;
+}
+
+#move-history {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 5px;
+}
+
+.move {
+  padding: 3px 8px;
+  background: #333;
+  color: white;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.move:hover {
+  background: #444;
+  transform: scale(1.05);
+}
