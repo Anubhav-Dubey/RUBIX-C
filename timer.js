@@ -34,12 +34,7 @@ function generateScramble(length=20) {
   
   const scrambleStr = scramble.join(' ');
   document.getElementById("scramble").textContent = scrambleStr;
-   // ===== ADD THIS LINE =====
-  if (window.cubeAPI) window.cubeAPI.visualizeScramble(scrambleStr);
-  // ========================
-
-  return scrambleStr;
-}
+  
   // Trigger 3D visualization
   if (window.cubeAPI) {
     window.cubeAPI.visualizeScramble(scrambleStr);
@@ -74,6 +69,8 @@ function startTimer() {
 }
 
 function stopTimer() {
+  if (!isRunning) return;
+  
   clearInterval(timer);
   elapsedTime = Date.now() - startTime;
   isRunning = false;
@@ -136,15 +133,10 @@ timeDisplay.style.color = 'var(--white)';
 generateScramble(); // Initial scramble
 
 // Initialize cube when page loads
-// ===== ADD THIS INIT CODE =====
-// Initialize cube when page loads
 window.addEventListener('load', () => {
   if (window.cubeAPI) {
     window.cubeAPI.initCube();
-    
-    // Optional: First scramble visualization
     const initialScramble = generateScramble();
     window.cubeAPI.visualizeScramble(initialScramble);
   }
 });
-// =============================
