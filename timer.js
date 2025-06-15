@@ -12,6 +12,7 @@ let elapsedTime = 0;
 let isRunning = false;
 let lastTime = null;
 let bestTime = null;
+let canStart = true; // New flag to prevent accidental starts
 
 // Scramble Generator
 const MOVES = ["U", "D", "L", "R", "F", "B"];
@@ -48,8 +49,11 @@ btnStartStop.addEventListener('click', toggleTimer);
 document.addEventListener('keydown', handleKeyPress);
 
 function toggleTimer() {
-  if (!isRunning) startTimer();
-  else stopTimer();
+  if (!isRunning && canStart) {
+    startTimer();
+  } else if (isRunning) {
+    stopTimer();
+  }
 }
 
 function startTimer() {
@@ -66,6 +70,10 @@ function startTimer() {
   btnStartStop.textContent = 'Stop';
   timeDisplay.style.color = 'var(--orange)';
   timeDisplay.parentElement.style.boxShadow = '0 0 30px rgba(255, 87, 34, 0.6)';
+  canStart = false;
+  
+  // Re-enable starting after a short delay to prevent double-trigger
+  setTimeout(() => { canStart = true; }, 300);
 }
 
 function stopTimer() {
@@ -124,7 +132,10 @@ function showMessage(ms) {
 function handleKeyPress(e) {
   if (e.code === 'Space') {
     e.preventDefault();
-    toggleTimer();
+    // Only trigger if not focused on other elements
+    if (document.activeElement === document.body || document.activeElement === timeDisplay) {
+      toggleTimer();
+    }
   }
 }
 
@@ -139,4 +150,7 @@ window.addEventListener('load', () => {
     const initialScramble = generateScramble();
     window.cubeAPI.visualizeScramble(initialScramble);
   }
+  
+  // Focus on the display to ensure spacebar works
+  timeDisplay.focus();
 });
